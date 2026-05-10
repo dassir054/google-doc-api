@@ -89,6 +89,7 @@ const localFile = `images/${fileName}`;
       });
     }
 await new Promise(resolve => setTimeout(resolve, 2000));
+console.log(`https://google-doc-api.onrender.com/images/${fileName}`);
     await docs.documents.batchUpdate({
       documentId: docId,
       requestBody: {
