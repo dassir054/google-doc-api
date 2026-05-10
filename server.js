@@ -71,17 +71,17 @@ foundIndex =
     await docs.documents.batchUpdate({
       documentId: docId,
       requestBody: {
+        
         requests: [
 
           {
-            replaceAllText: {
-              containsText: {
-                text: "{{i17}}",
-                matchCase: true
-              },
-              replaceText: ""
-            }
-          },
+  deleteContentRange: {
+    range: {
+      startIndex: foundIndex,
+      endIndex: foundIndex + 7
+    }
+  }
+},
 
           {
             insertInlineImage: {
