@@ -86,7 +86,7 @@ app.post("/replace-images", async (req, res) => {
         error: "Placeholder not found"
       });
     }
-
+await new Promise(resolve => setTimeout(resolve, 2000));
     await docs.documents.batchUpdate({
       documentId: docId,
       requestBody: {
