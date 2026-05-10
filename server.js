@@ -9,13 +9,9 @@ app.use(express.json());
 
 app.use("/images", express.static("images"));
 
-const credentials = JSON.parse(
-  fs.readFileSync("credentials.json")
-);
+const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
 
-const token = JSON.parse(
-  fs.readFileSync("token.json")
-);
+const token = JSON.parse(process.env.GOOGLE_TOKEN);
 
 const { client_secret, client_id, redirect_uris } =
   credentials.installed;
@@ -111,7 +107,7 @@ app.post("/replace-images", async (req, res) => {
               location: {
                 index: foundIndex
               },
-              uri: "https://illiterate-stubbly-carpool.ngrok-free.dev/images/test.jpg",
+              uri: "https://google-doc-api.onrender.com/images/test.jpg",
               objectSize: {
                 height: {
                   magnitude: 20,
