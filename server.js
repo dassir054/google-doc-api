@@ -42,8 +42,10 @@ app.post("/replace-images", async (req, res) => {
       method: "GET",
       responseType: "stream"
     });
+const fileName = `${Date.now()}.jpg`;
 
-    const localFile = "images/test.jpg";
+const localFile = `images/${fileName}`;
+  
 
     const writer = fs.createWriteStream(localFile);
 
@@ -107,7 +109,7 @@ await new Promise(resolve => setTimeout(resolve, 2000));
               location: {
                 index: foundIndex
               },
-              uri: "https://google-doc-api.onrender.com/images/test.jpg",
+              uri: `https://google-doc-api.onrender.com/images/${fileName}`,
               objectSize: {
                 height: {
                   magnitude: 20,
