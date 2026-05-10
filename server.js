@@ -32,20 +32,18 @@ app.post("/replace-images", async (req, res) => {
     const docId = req.body.docId;
 
     const images = req.body.images;
-images.reverse();
-    const document = await docs.documents.get({
-      documentId: docId,
-    });
-
-    const content = document.data.body.content;
-
-    const requests = [];
 
     for (const imageItem of images) {
 
       const tag = imageItem.tag;
 
       const imageUrl = imageItem.imageUrl;
+
+      const document = await docs.documents.get({
+        documentId: docId,
+      });
+
+      const content = document.data.body.content;
 
       let foundIndex = null;
 
@@ -71,44 +69,44 @@ images.reverse();
 
       if (!foundIndex) continue;
 
-      requests.push({
+      await docs.documents.batchUpdate({
+        documentId: docId,
+        requestBody: {
+          requests: [
 
-        insertInlineImage: {
-          location: {
-            index: foundIndex
-          },
-          uri: imageUrl,
-          objectSize: {
-            height: {
-              magnitude: 35,
-              unit: "PT"
+            {
+              insertInlineImage: {
+                location: {
+                  index: foundIndex
+                },
+                uri: imageUrl,
+                objectSize: {
+                  height: {
+                    magnitude: 35,
+                    unit: "PT"
+                  },
+                  width: {
+                    magnitude: 35,
+                    unit: "PT"
+                  }
+                }
+              }
             },
-            width: {
-              magnitude: 35,
-              unit: "PT"
+
+            {
+              deleteContentRange: {
+                range: {
+                  startIndex: foundIndex + 1,
+                  endIndex: foundIndex + tag.length + 1
+                }
+              }
             }
-          }
-        }
-      });
 
-      requests.push({
-
-        deleteContentRange: {
-          range: {
-            startIndex: foundIndex + 1,
-            endIndex: foundIndex + tag.length + 1
-          }
+          ]
         }
       });
 
     }
-
-    await docs.documents.batchUpdate({
-      documentId: docId,
-      requestBody: {
-        requests
-      }
-    });
 
     res.json({
       success: true
