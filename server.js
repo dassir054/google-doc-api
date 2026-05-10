@@ -51,8 +51,12 @@ app.post("/replace-images", async (req, res) => {
           element.textRun &&
           element.textRun.content.includes("{{i17}}")
         ) {
+const placeholderIndex =
+  element.textRun.content.indexOf("{{i20}}");
 
-          foundIndex = element.startIndex;
+foundIndex =
+  element.startIndex + placeholderIndex;
+          
         }
       }
     }
