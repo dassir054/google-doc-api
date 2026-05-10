@@ -31,7 +31,7 @@ app.post("/replace-images", async (req, res) => {
 
     const docId = req.body.docId;
 
-    const imageUrl = req.body.imageUrl;
+    const images = req.body.images;
 
     const document = await docs.documents.get({
       documentId: docId,
@@ -39,69 +39,74 @@ app.post("/replace-images", async (req, res) => {
 
     const content = document.data.body.content;
 
-    let foundIndex = null;
+    const requests = [];
 
-    for (const item of content) {
+    for (const imageItem of images) {
 
-      if (!item.paragraph) continue;
+      const tag = imageItem.tag;
 
-      for (const element of item.paragraph.elements) {
+      const imageUrl = imageItem.imageUrl;
 
-        if (
-          element.textRun &&
-          element.textRun.content.includes("{{i17}}")
-        ) {
+      let foundIndex = null;
 
-          const placeholderIndex =
-            element.textRun.content.indexOf("{{i17}}");
+      for (const item of content) {
 
-          foundIndex =
-            element.startIndex + placeholderIndex;
+        if (!item.paragraph) continue;
+
+        for (const element of item.paragraph.elements) {
+
+          if (
+            element.textRun &&
+            element.textRun.content.includes(tag)
+          ) {
+
+            const placeholderIndex =
+              element.textRun.content.indexOf(tag);
+
+            foundIndex =
+              element.startIndex + placeholderIndex;
+          }
         }
       }
-    }
 
-    if (!foundIndex) {
+      if (!foundIndex) continue;
 
-      return res.status(404).json({
-        error: "Placeholder not found"
+      requests.push({
+
+        insertInlineImage: {
+          location: {
+            index: foundIndex
+          },
+          uri: imageUrl,
+          objectSize: {
+            height: {
+              magnitude: 35,
+              unit: "PT"
+            },
+            width: {
+              magnitude: 35,
+              unit: "PT"
+            }
+          }
+        }
       });
+
+      requests.push({
+
+        deleteContentRange: {
+          range: {
+            startIndex: foundIndex + 1,
+            endIndex: foundIndex + tag.length + 1
+          }
+        }
+      });
+
     }
 
     await docs.documents.batchUpdate({
       documentId: docId,
       requestBody: {
-        requests: [
-
-          {
-            insertInlineImage: {
-              location: {
-                index: foundIndex
-              },
-              uri: imageUrl,
-              objectSize: {
-                height: {
-                  magnitude: 35,
-                  unit: "PT"
-                },
-                width: {
-                  magnitude: 35,
-                  unit: "PT"
-                }
-              }
-            }
-          },
-
-          {
-            deleteContentRange: {
-              range: {
-                startIndex: foundIndex + 1,
-                endIndex: foundIndex + 8
-              }
-            }
-          }
-
-        ]
+        requests
       }
     });
 
