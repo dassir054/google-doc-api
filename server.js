@@ -82,16 +82,16 @@ app.post("/replace-images", async (req, res) => {
           {
             insertInlineImage: {
               location: {
-                index: foundIndex
+                index: foundIndex +1
               },
               uri: imageUrl,
               objectSize: {
                 height: {
-                  magnitude: 20,
+                  magnitude: 35,
                   unit: "PT"
                 },
                 width: {
-                  magnitude: 20,
+                  magnitude: 35,
                   unit: "PT"
                 }
               }
