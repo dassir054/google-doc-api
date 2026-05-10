@@ -1,13 +1,9 @@
 const express = require("express");
-const fs = require("fs");
-const axios = require("axios");
 const { google } = require("googleapis");
 
 const app = express();
 
 app.use(express.json());
-
-app.use("/images", express.static("images"));
 
 const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
 
@@ -36,27 +32,6 @@ app.post("/replace-images", async (req, res) => {
     const docId = req.body.docId;
 
     const imageUrl = req.body.imageUrl;
-
-    const response = await axios({
-      url: imageUrl,
-      method: "GET",
-      responseType: "stream"
-    });
-const fileName = `${Date.now()}.jpg`;
-
-const localFile = `images/${fileName}`;
-  
-
-    const writer = fs.createWriteStream(localFile);
-
-    response.data.pipe(writer);
-
-    await new Promise((resolve, reject) => {
-
-      writer.on("finish", resolve);
-
-      writer.on("error", reject);
-    });
 
     const document = await docs.documents.get({
       documentId: docId,
@@ -88,8 +63,7 @@ const localFile = `images/${fileName}`;
         error: "Placeholder not found"
       });
     }
-await new Promise(resolve => setTimeout(resolve, 2000));
-console.log(imageUrl);
+
     await docs.documents.batchUpdate({
       documentId: docId,
       requestBody: {
