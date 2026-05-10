@@ -32,7 +32,7 @@ app.post("/replace-images", async (req, res) => {
     const docId = req.body.docId;
 
     const images = req.body.images;
-
+images.reverse();
     const document = await docs.documents.get({
       documentId: docId,
     });
