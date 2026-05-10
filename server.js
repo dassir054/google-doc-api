@@ -51,12 +51,12 @@ app.post("/replace-images", async (req, res) => {
           element.textRun &&
           element.textRun.content.includes("{{i17}}")
         ) {
-const placeholderIndex =
-  element.textRun.content.indexOf("{{i20}}");
 
-foundIndex =
-  element.startIndex + placeholderIndex;
-          
+          const placeholderIndex =
+            element.textRun.content.indexOf("{{i17}}");
+
+          foundIndex =
+            element.startIndex + placeholderIndex;
         }
       }
     }
@@ -71,22 +71,12 @@ foundIndex =
     await docs.documents.batchUpdate({
       documentId: docId,
       requestBody: {
-        
         requests: [
-
-          {
-  deleteContentRange: {
-    range: {
-      startIndex: foundIndex,
-      endIndex: foundIndex + 7
-    }
-  }
-},
 
           {
             insertInlineImage: {
               location: {
-                index: foundIndex +1
+                index: foundIndex
               },
               uri: imageUrl,
               objectSize: {
@@ -98,6 +88,15 @@ foundIndex =
                   magnitude: 35,
                   unit: "PT"
                 }
+              }
+            }
+          },
+
+          {
+            deleteContentRange: {
+              range: {
+                startIndex: foundIndex + 1,
+                endIndex: foundIndex + 8
               }
             }
           }
